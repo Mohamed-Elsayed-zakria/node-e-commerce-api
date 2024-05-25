@@ -12,8 +12,7 @@ dbConnection();
 
 // middleware
 app.use(express.json())
-app.use(gategoryRoutes);
-
+app.use("/api/v1/categories", gategoryRoutes);
 
 if (process.env.NODE_ENV === "development") {
     app.use(morgan("dev"));

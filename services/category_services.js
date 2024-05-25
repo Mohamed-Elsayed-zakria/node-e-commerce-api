@@ -53,4 +53,44 @@ exports.getOneCategory = async (req, res) => {
         })
     }
 }
+exports.updateCategory = async (req, res) => {
+    const { id } = req.params;
+    const { name } = req.body;
+    try {
+        const updateCategory = await CategoryModel.findByIdAndUpdate(id, { name, slug: slugify(name) }, { new: true });
+        if (!updateCategory) {
+            res.status(404).json({
+                message: `not found category with id : ${id}`
+            })
+            return;
+        }
+        res.status(200).json({
+            message: "success",
+            data: updateCategory
+        })
+    } catch (error) {
+        res.status(400).json({
+            message: error.message
+        })
+    }
+}
 
+exports.deleteCategory = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const deleteCategory = await CategoryModel.findByIdAndDelete(id);
+        if (!deleteCategory) {
+            res.status(404).json({
+                message: `not found category with id : ${id}`
+            })
+            return;
+        }
+        res.status(200).json({
+            message: "success",
+        })
+    } catch (error) {
+        res.status(400).json({
+            message: error.message
+        })
+    }
+}
