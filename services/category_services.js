@@ -1,7 +1,8 @@
 const CategoryModel = require("../models/category_model")
 var slugify = require('slugify')
+const ApiError = require('../utils/api_error')
 
-exports.getCategories = async (req, res) => {
+exports.getCategories = async (req, res, next) => {
     const page = req.query.page * 1 || 1;
     const limit = req.query.limit * 1 || 5;
     const skip = (page - 1) * limit;
@@ -13,12 +14,10 @@ exports.getCategories = async (req, res) => {
             data: getCategory
         })
     } catch (error) {
-        res.status(400).json({
-            message: error.message
-        })
+        next(new ApiError(error.message, 400))
     }
 }
-exports.createCategory = async (req, res) => {
+exports.createCategory = async (req, res, next) => {
     const { name } = req.body;
     const createCategory = new CategoryModel({ name, slug: slugify(name) });
     try {
@@ -28,50 +27,38 @@ exports.createCategory = async (req, res) => {
             data: createCategory
         })
     } catch (error) {
-        res.status(400).json({
-            message: error.message,
-        })
+        next(new ApiError(error.message, 400))
     }
 }
 
-exports.getOneCategory = async (req, res) => {
+exports.getOneCategory = async (req, res, next) => {
     const { id } = req.params;
     try {
         const getCategory = await CategoryModel.findById(id);
         if (!getCategory) {
-            res.status(404).json({
-                message: `not found category with id : ${id}`
-            })
-            return;
+            return next(new ApiError(`not found category with id : ${id}`, 404));
         }
         res.status(200).json({
             data: getCategory
         })
     } catch (error) {
-        res.status(400).json({
-            message: error.message
-        })
+        next(new ApiError(error.message, 400))
     }
 }
-exports.updateCategory = async (req, res) => {
+exports.updateCategory = async (req, res, next) => {
     const { id } = req.params;
     const { name } = req.body;
     try {
         const updateCategory = await CategoryModel.findByIdAndUpdate(id, { name, slug: slugify(name) }, { new: true });
         if (!updateCategory) {
-            res.status(404).json({
-                message: `not found category with id : ${id}`
-            })
-            return;
+            return next(new ApiError(`not found category with id : ${id}`, 404));
         }
         res.status(200).json({
             message: "success",
             data: updateCategory
         })
     } catch (error) {
-        res.status(400).json({
-            message: error.message
-        })
+        next(new ApiError(error.message, 400))
     }
 }
 
@@ -80,17 +67,12 @@ exports.deleteCategory = async (req, res) => {
     try {
         const deleteCategory = await CategoryModel.findByIdAndDelete(id);
         if (!deleteCategory) {
-            res.status(404).json({
-                message: `not found category with id : ${id}`
-            })
-            return;
+            return next(new ApiError(`not found category with id : ${id}`, 404));
         }
         res.status(200).json({
             message: "success",
         })
     } catch (error) {
-        res.status(400).json({
-            message: error.message
-        })
+        next(new ApiError(error.message, 400))
     }
 }
