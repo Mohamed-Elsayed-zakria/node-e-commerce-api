@@ -12,7 +12,7 @@ const { getCategories,
     updateCategory,
     deleteCategory
 
-} = require("../services/category_services");
+} = require("../controller/category_controller");
 const router = express.Router();
 
 router.post("/", createCategoryValidator, createCategory);
