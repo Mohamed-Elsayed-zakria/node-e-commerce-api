@@ -5,7 +5,9 @@ const ApiError = require("./utils/api_error");
 const errorHandler = require("./utils/error_handler");
 dotenv.config({ path: "config.env" });
 const dbConnection = require("./config/db_connection");
-const gategoryRoutes = require("./routes/category_routes")
+const categoryRoutes = require("./routes/category_routes")
+const subCategoryRoutes = require("./routes/sub_category_routes")
+
 const app = express();
 const port = process.env.PORT;
 
@@ -13,8 +15,9 @@ const port = process.env.PORT;
 dbConnection();
 
 // middleware
-app.use(express.json())
-app.use("/api/v1/categories", gategoryRoutes);
+app.use(express.urlencoded({ extended: true }));
+app.use("/api/v1/categories", categoryRoutes);
+app.use("/api/v1/subCategories", subCategoryRoutes);
 
 app.all("*", (req, res, next) => {
     next(new ApiError(`can't find ${req.originalUrl} on this server`, 400));
